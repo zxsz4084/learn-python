@@ -7,13 +7,22 @@ import time, socket, threading
 
 def tcplink(sock, addr):
     print 'Accept new connection from %s:%s...' % addr
-    sock.send('Welcome!')
+    print addr;
+    sock.send('Welcome '+str(addr[0])+':'+str(addr[1]))
+    #crossdomain = "<cross-domain-policy>" +"<allow-access-from domain='*' to-ports='*' />" +"</cross-domain-policy>" +"\0";
+    crossdomain = "<?xml version=\"1.0\"?><!DOCTYPE cross-domain-policy SYSTEM \"http://www.adobe.com/xml/dtds/cross-domain-policy.dtd\"><cross-domain-policy><allow-access-from domain='*' to-ports='*' /></cross-domain-policy>\0";
     while True:
         data = sock.recv(1024)
+        print 'msg：'+data
         time.sleep(1)
         if data == 'exit' or not data:
             break
-        sock.send('Hello, %s!' % data)
+        
+        if data.find('policy-file-request') != -1: 
+            sock.send(crossdomain)
+        else:
+            sock.send('Hello, 【%s】 world' % data)
+            
     sock.close()
     print 'Connection from %s:%s closed.' % addr
 
